@@ -3,16 +3,16 @@ from imread_from_url import imread_from_url
 
 from HRNET import HRNET, ModelType
 
-# Initialize inference model
+# Initialize Pose Estimation model
 model_path = "models/hrnet_coco_w48_Nx384x288.onnx"
 model_type = ModelType.COCO
-hrnet = HRNET(model_path, model_type, conf_threshold=0.6)
+hrnet = HRNET(model_path, model_type, conf_thres=0.5)
 
 # Read image
-img_url = "https://upload.wikimedia.org/wikipedia/commons/4/4b/Bull-Riding2-Szmurlo.jpg"
+img_url = "https://upload.wikimedia.org/wikipedia/commons/8/8e/17_Years_of_Sekar_Jepun_2014-11-01_72.jpg"
 img = imread_from_url(img_url)
 
-# Perform the inference in the image
+# Estimate the pose in the image
 total_heatmap, peaks = hrnet(img)
 
 # Draw Model Output

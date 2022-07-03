@@ -36,6 +36,16 @@ class ModelType(enum.Enum):
     MPII = 2
 
 
+def get_people_detections(detections):
+    boxes, scores, class_ids = detections
+
+    boxes = boxes[class_ids == 0]
+    scores = scores[class_ids == 0]
+    class_ids = class_ids[class_ids == 0]
+
+    return boxes, scores, class_ids
+
+
 def get_vis_info(model_type):
     if model_type == ModelType.COCO:
         return coco_skeleton, coco_colors
@@ -44,39 +54,55 @@ def get_vis_info(model_type):
     else:
         raise ValueError("Unknown model type")
 
-
 def valid_point(point):
     return point[0] >= 0 and point[1] >= 0
+
+def draw_skeletons(img, keypoints, modeltype):
+    output_img = img.copy()
+
+    if type(keypoints) != list:
+        return draw_skeleton(output_img, keypoints, modeltype)
+
+    for keypoint in keypoints:
+        output_img = draw_skeleton(output_img, keypoint, modeltype)
+
+    return output_img
+
 
 def draw_skeleton(img, keypoints, modeltype):
     skeleton, colors = get_vis_info(modeltype)
 
+    scale = 1/250
+    thinkness = min(int(img.shape[0]*scale), int(img.shape[1]*scale))
+
     for i, segment in enumerate(skeleton):
         point1_id, point2_id = segment
 
-        point1 = (int(keypoints[point1_id, 1]), int(keypoints[point1_id, 0]))
-        point2 = (int(keypoints[point2_id, 1]), int(keypoints[point2_id, 0]))
+        point1 = keypoints[point1_id]
+        point2 = keypoints[point2_id]
 
         color = colors[i]
 
         if valid_point(point1):
-            cv2.circle(img, point1, radius=5, color=color, thickness=-1, lineType=cv2.LINE_AA)
+
+            cv2.circle(img, (int(point1[0]), int(point1[1])), radius=thinkness, color=color, thickness=-1, lineType=cv2.LINE_AA)
 
         if valid_point(point2):
-            cv2.circle(img, point2, radius=5, color=color, thickness=-1, lineType=cv2.LINE_AA)
+            cv2.circle(img, (int(point2[0]), int(point2[1])), radius=thinkness, color=color, thickness=-1, lineType=cv2.LINE_AA)
 
         if not valid_point(point1) or not valid_point(point2):
             continue
-        img = cv2.line(img, point1, point2, color, thickness=3, lineType=cv2.LINE_AA)
+        img = cv2.line(img, (int(point1[0]), int(point1[1])),
+                       (int(point2[0]), int(point2[1])),
+                       color, thickness=thinkness, lineType=cv2.LINE_AA)
 
     return img
 
 
 def draw_heatmap(img, heatmap, mask_alpha=0.4):
-
     # Normalize the heatmap from 0 to 255
     min, max = np.min(heatmap), np.max(heatmap)
-    heatmap_norm = np.uint8(255 * (heatmap-min) / (max - min))
+    heatmap_norm = np.uint8(255 * (heatmap - min) / (max - min))
 
     # Apply color to the heatmap
     color_heatmap = cv2.applyColorMap(heatmap_norm, cv2.COLORMAP_MAGMA)
@@ -91,4 +117,3 @@ def draw_heatmap(img, heatmap, mask_alpha=0.4):
         combined_img = cv2.addWeighted(img, mask_alpha, color_heatmap, (1 - mask_alpha), 0)
 
     return combined_img
-

@@ -4,20 +4,25 @@ import numpy as np
 import onnxruntime
 
 from .utils import *
-from yolov6-inference import YOLOv6
+from .yolov6.YOLOv6 import YOLOv6
 
 
 class HRNET:
 
-    def __init__(self, path, model_type, conf_threshold=0.7):
-        self.conf_threshold = conf_threshold
+    def __init__(self, path, model_type, conf_thres=0.7, search_region_ratio=0.05):
+        self.conf_threshold = conf_thres
         self.model_type = model_type
+        self.search_region_ratio = search_region_ratio
 
         # Initialize model
         self.initialize_model(path)
 
-    def __call__(self, image):
-        return self.update(image)
+    def __call__(self, image, detections=None):
+
+        if detections is None:
+            return self.update(image)
+        else:
+            return self.update_with_detections(image, detections)
 
     def initialize_model(self, path):
         self.session = onnxruntime.InferenceSession(path,
@@ -27,19 +32,58 @@ class HRNET:
         self.get_input_details()
         self.get_output_details()
 
+    def update_with_detections(self, image, detections):
+
+        full_height, full_width = image.shape[:2]
+
+        boxes, scores, class_ids = get_people_detections(detections)
+
+        if len(scores) == 0:
+            return self.update(image)
+
+        poses = []
+        total_heatmap = np.zeros((full_height, full_width))
+
+        for box, score in zip(boxes, scores):
+
+            x1, y1, x2, y2 = box
+
+            # Enlarge search region
+            x1 = max(int(x1 - full_width * self.search_region_ratio), 0)
+            x2 = min(int(x2 + full_width * self.search_region_ratio), full_width)
+            y1 = max(int(y1 - full_height * self.search_region_ratio), 0)
+            y2 = min(int(y2 + full_height * self.search_region_ratio), full_height)
+
+            crop = image[y1:y2, x1:x2]
+            body_heatmap, body_pose = self.update(crop)
+
+            # Fix the body pose to the original image
+            poses.append(body_pose + np.array([x1, y1]))
+
+            # Add the heatmap to the total heatmap
+            total_heatmap[y1:y2, x1:x2] += body_heatmap
+
+        self.total_heatmap = total_heatmap
+        self.poses = poses
+
+        return self.total_heatmap, self.poses
+
     def update(self, image):
+
+        self.img_height, self.img_width = image.shape[:2]
+
         input_tensor = self.prepare_input(image)
 
         # Perform inference on the image
         outputs = self.inference(input_tensor)
 
         # Process output data
-        self.total_heatmap, self.peaks = self.process_output(outputs)
+        self.total_heatmap, self.poses = self.process_output(outputs)
 
-        return self.total_heatmap, self.peaks
+        return self.total_heatmap, self.poses
+
 
     def prepare_input(self, image):
-        self.img_height, self.img_width = image.shape[:2]
 
         input_img = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
@@ -63,24 +107,23 @@ class HRNET:
         return outputs
 
     def process_output(self, heatmaps):
-        total_heatmap = heatmaps.sum(axis=1)[0]
-
+        total_heatmap = cv2.resize(heatmaps.sum(axis=1)[0], (self.img_width, self.img_height))
         map_h, map_w = heatmaps.shape[2:]
 
         # Find the maximum value in each of the heatmaps and its location
         max_vals = np.array([np.max(heatmap) for heatmap in heatmaps[0, ...]])
         peaks = np.array([np.unravel_index(heatmap.argmax(), heatmap.shape)
                           for heatmap in heatmaps[0, ...]])
-        peaks[max_vals < self.conf_threshold] = np.array([-1, -1])
+        peaks[max_vals < self.conf_threshold] = np.array([np.NaN, np.NaN])
 
         # Scale peaks to the image size
-        peaks = peaks * np.array([self.img_height / map_h,
-                                  self.img_width / map_w])
+        peaks = peaks[:, ::-1] * np.array([self.img_width / map_w,
+                                          self.img_height / map_h])
 
         return total_heatmap, peaks
 
     def draw_pose(self, image):
-        return draw_skeleton(image, self.peaks, self.model_type)
+        return draw_skeletons(image, self.poses, self.model_type)
 
     def draw_heatmap(self, image, mask_alpha=0.4):
         return draw_heatmap(image, self.total_heatmap, mask_alpha)
@@ -107,7 +150,7 @@ if __name__ == '__main__':
     # Initialize model
     model_path = "../models/hrnet_coco_w48_384x288.onnx"
     model_type = ModelType.COCO
-    hrnet = HRNET(model_path, model_type, conf_threshold=0.6)
+    hrnet = HRNET(model_path, model_type, conf_thres=0.6)
 
     img = imread_from_url(
         "https://upload.wikimedia.org/wikipedia/commons/4/4b/Bull-Riding2-Szmurlo.jpg")
