@@ -7,6 +7,7 @@
 
 # Important
 - The repository is still in progress, I need to add the person detection to work with multiple people in the image.
+- For the multiperson examples, it might be more efficient to collect all the image crops and pass them together to the models that accept multiple image batches (Nxheightxwidth). I do it separately for simplicity.
 
 # Requirements
 
@@ -34,24 +35,25 @@ pip install git+https://github.com/zizo-pro/pafy@b8976f22c19e4ab5515cacbfae0a397
 ```
 
 # ONNX model 
-The original models were converted to different formats (including .onnx) by [PINTO0309](https://github.com/PINTO0309). Download the models from the link below and save them into the **[models](https://github.com/ibaiGorordo/ONNX-GLPDepth/tree/main/models)** folder. 
-
-- HRNET
-
-The original model was converted to ONNX using the following Colab notebook from the original repository, run the notebook and save the download model into the [models  folder](https://github.com/ibaiGorordo/ONNX-HRNET-Human-Pose-Estimation/tree/main/models):
+The original models were converted to different formats (including .onnx) by [PINTO0309](https://github.com/PINTO0309). Download the models from the link below and save them into the **[models](https://github.com/ibaiGorordo/ONNX-HRNET-Human-Pose-Estimation/tree/main/models)** folder"
 - HRNET: https://github.com/PINTO0309/PINTO_model_zoo/tree/main/271_HRNet [MIT License](https://github.com/leoxiaobin/deep-high-resolution-net.pytorch/blob/master/LICENSE)
 - Lite HRNet: https://github.com/PINTO0309/PINTO_model_zoo/tree/main/268_Lite-HRNet [Apache 2.0 License](https://github.com/HRNet/Lite-HRNet/blob/hrnet/LICENSE)
  
 # Examples
 
- * **Image Pose Estimation**:
+ * **Image Single Pose Estimation**:
  ```
- python image_pose_estimation.py
+ python image_singlepose_estimation.py
  ```
  
- * **Image Pose Heatmap**:
+  * **Image Multi Pose Estimation**:
  ```
- python image_pose_heatmap.py
+ python image_multipose_estimation.py
+ ```
+ 
+ * **Image Single Pose Heatmap**:
+ ```
+ python image_singlepose_heatmap.py
  ```
 
 # References:
