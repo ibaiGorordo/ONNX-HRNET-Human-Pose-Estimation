@@ -9,7 +9,7 @@ model_type = ModelType.COCO
 hrnet = HRNET(model_path, model_type, conf_thres=0.6)
 
 # Read image
-img_url = "https://upload.wikimedia.org/wikipedia/commons/4/4b/Bull-Riding2-Szmurlo.jpg"
+img_url = "https://upload.wikimedia.org/wikipedia/commons/8/8e/17_Years_of_Sekar_Jepun_2014-11-01_72.jpg"
 img = imread_from_url(img_url)
 
 # Perform the inference in the image
