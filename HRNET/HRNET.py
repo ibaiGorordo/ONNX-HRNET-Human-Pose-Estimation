@@ -106,7 +106,7 @@ if __name__ == '__main__':
     # Initialize model
     model_path = "../models/hrnet_coco_w48_384x288.onnx"
     model_type = ModelType.COCO
-    hrnet = HRNET(model_path, model_type, conf_threshold=0.5)
+    hrnet = HRNET(model_path, model_type, conf_threshold=0.6)
 
     img = imread_from_url(
         "https://upload.wikimedia.org/wikipedia/commons/4/4b/Bull-Riding2-Szmurlo.jpg")

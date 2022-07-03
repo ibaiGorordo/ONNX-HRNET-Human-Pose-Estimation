@@ -6,10 +6,10 @@ from HRNET import HRNET, ModelType
 # Initialize inference model
 model_path = "models/hrnet_coco_w48_384x288.onnx"
 model_type = ModelType.COCO
-hrnet = HRNET(model_path, model_type, conf_threshold=0.0)
+hrnet = HRNET(model_path, model_type, conf_threshold=0.6)
 
 # Read image
-img_url = "https://upload.wikimedia.org/wikipedia/commons/5/53/People_of_Tibet54.jpg"
+img_url = "https://upload.wikimedia.org/wikipedia/commons/4/4b/Bull-Riding2-Szmurlo.jpg"
 img = imread_from_url(img_url)
 
 # Perform the inference in the image

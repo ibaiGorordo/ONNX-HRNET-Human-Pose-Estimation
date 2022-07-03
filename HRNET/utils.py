@@ -45,6 +45,9 @@ def get_vis_info(model_type):
         raise ValueError("Unknown model type")
 
 
+def valid_point(point):
+    return point[0] >= 0 and point[1] >= 0
+
 def draw_skeleton(img, keypoints, modeltype):
     skeleton, colors = get_vis_info(modeltype)
 
@@ -56,13 +59,13 @@ def draw_skeleton(img, keypoints, modeltype):
 
         color = colors[i]
 
-        if point1[0] != -1 or point1[1] != -1:
+        if valid_point(point1):
             cv2.circle(img, point1, radius=5, color=color, thickness=-1, lineType=cv2.LINE_AA)
 
-        if point2[0] != -1 or point2[1] != -1:
+        if valid_point(point2):
             cv2.circle(img, point2, radius=5, color=color, thickness=-1, lineType=cv2.LINE_AA)
 
-        if point1[0] == -1 or point1[1] == -1 or point2[0] == -1 or point2[1] == -1:
+        if not valid_point(point1) or not valid_point(point2):
             continue
         img = cv2.line(img, point1, point2, color, thickness=3, lineType=cv2.LINE_AA)
 
