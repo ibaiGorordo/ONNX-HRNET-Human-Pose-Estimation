@@ -1,0 +1,3 @@
+[submodule "HRNET/yolov6-inference"]
+	path = HRNET/yolov6-inference
+	url = https://github.com/ibaiGorordo/ONNX-YOLOv6-Object-Detection.git
