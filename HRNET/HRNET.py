@@ -4,6 +4,7 @@ import numpy as np
 import onnxruntime
 
 from .utils import *
+from yolov6-inference import YOLOv6
 
 
 class HRNET:
