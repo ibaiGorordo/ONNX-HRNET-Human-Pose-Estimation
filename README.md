@@ -1,5 +1,5 @@
 # ONNX HRNET 2D Human Pose Estimation (WIP)
- Python scripts for performing 2D human pose estimation using the HRNET (HRNET, Lite-HRNet...) family models in ONNX.
+ Python scripts for performing 2D human pose estimation using the HRNET family models (HRNET, Lite-HRNet) in ONNX.
 
 
 ![!ONNX HRNET 2D Human Pose Estimation](https://github.com/ibaiGorordo/ONNX-HRNET-Human-Pose-Estimation/blob/main/doc/img/output.jpg)
