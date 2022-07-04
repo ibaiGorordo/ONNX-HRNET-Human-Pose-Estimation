@@ -1,9 +1,9 @@
 # ONNX HRNET 2D Human Pose Estimation (WIP)
- Python scripts for performing 2D human pose estimation using the HRNET (HRNET, Lite-HRNet...) family models in ONNX.
+ Python scripts for performing 2D human pose estimation using the HRNET family models (HRNET, Lite-HRNet) in ONNX.
 
 
 ![!ONNX HRNET 2D Human Pose Estimation](https://github.com/ibaiGorordo/ONNX-HRNET-Human-Pose-Estimation/blob/main/doc/img/output.jpg)
-*Original image: https://commons.wikimedia.org/wiki/File:Bull-Riding2-Szmurlo.jpg*
+*Original image: https://en.wikipedia.org/wiki/File:Flickr_-_The_U.S._Army_-_%27cavalry_charge%27.jpg*
 
 # Important
 - The repository is still in progress, I need to add the person detection to work with multiple people in the image.
@@ -40,7 +40,7 @@ The original models were converted to different formats (including .onnx) by [PI
 - **Lite HRNet** [[Apache 2.0 License](https://github.com/HRNet/Lite-HRNet/blob/hrnet/LICENSE)]: https://github.com/PINTO0309/PINTO_model_zoo/tree/main/268_Lite-HRNet 
  
 ## YOLOv5 or YOLOv6 ONNX models
-For the multiperson examples, both [YOLOv5](https://github.com/ultralytics/yolov5) and [YOLOv6](https://github.com/meituan/YOLOv6) models can be used. You can convert the original models to ONNX using the Google Colab repositories linked below, and save the converted onnx models in to the **[models](https://github.com/ibaiGorordo/ONNX-HRNET-Human-Pose-Estimation/tree/main/models)** folder".
+For the multiperson examples, both [YOLOv5](https://github.com/ultralytics/yolov5) and [YOLOv6](https://github.com/meituan/YOLOv6) models can be used. You can convert the original models to ONNX using the Google Colab repositories linked below, and save the converted onnx models in to the **[models](https://github.com/ibaiGorordo/ONNX-HRNET-Human-Pose-Estimation/tree/main/models)** folder.
 - **YOLOv5 ONNX conversion:** [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1V-F3erKkPun-vNn28BoOc6ENKmfo8kDh?usp=sharing)
 - **YOLOv6 ONNX conversion:** [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1pke1ffMeI2dXkIAbzp6IHWdQ0u8S6I0n?usp=sharing)
 
