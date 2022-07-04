@@ -61,12 +61,12 @@ For the multiperson examples, both [YOLOv5](https://github.com/ultralytics/yolov
  python image_singlepose_heatmap.py
  ```
  
- * **Webcam Multi Pose Heatmap**:
+ * **Webcam Multi Pose Estimation**:
  ```
  python webcam_multipose_estimation.py
  ``` 
  
- * **Video Multi Pose Heatmap**:
+ * **Video Multi Pose Estimation**:
  ```
  python video_multipose_estimation.py
  ``` 
