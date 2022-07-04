@@ -1,4 +1,4 @@
-# ONNX HRNET 2D Human Pose Estimation (WIP)
+# ONNX HRNET 2D Human Pose Estimation
  Python scripts for performing 2D human pose estimation using the HRNET family models (HRNET, Lite-HRNet) in ONNX.
 
 
@@ -6,8 +6,8 @@
 *Original image: https://en.wikipedia.org/wiki/File:Flickr_-_The_U.S._Army_-_%27cavalry_charge%27.jpg*
 
 # Important
-- The repository is still in progress, I need to add the person detection to work with multiple people in the image.
 - For the multiperson examples, it might be more efficient to collect all the image crops and pass them together to the models that accept multiple image batches (Nxheightxwidth). I do it separately for simplicity.
+- There are more efficient models to perform multi pose estimation, the approach presented here is not optimal.
 
 # Requirements
 
@@ -60,7 +60,20 @@ For the multiperson examples, both [YOLOv5](https://github.com/ultralytics/yolov
  ```
  python image_singlepose_heatmap.py
  ```
-
+ 
+ * **Webcam Multi Pose Heatmap**:
+ ```
+ python webcam_multipose_estimation.py
+ ``` 
+ 
+ * **Video Multi Pose Heatmap**:
+ ```
+ python video_multipose_estimation.py
+ ``` 
+ ![!HRNET Video Pose Estimation](https://github.com/ibaiGorordo/ONNX-HRNET-Human-Pose-Estimation/blob/main/doc/img/hrnet_video.gif)
+ 
+ *Original video: https://youtu.be/HI-BMpNByo0*
+  
 # References:
 * HRNET: https://github.com/HRNet/HRNet-Human-Pose-Estimation
 * Lite HRNet: https://github.com/HRNet/Lite-HRNet
