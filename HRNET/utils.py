@@ -36,14 +36,14 @@ class ModelType(enum.Enum):
     MPII = 2
 
 
-def get_people_detections(detections):
+def filter_person_detections(detections):
     boxes, scores, class_ids = detections
 
     boxes = boxes[class_ids == 0]
     scores = scores[class_ids == 0]
     class_ids = class_ids[class_ids == 0]
 
-    return boxes, scores, class_ids
+    return len(scores)>0, [boxes, scores, class_ids]
 
 
 def get_vis_info(model_type):
@@ -72,7 +72,7 @@ def draw_skeletons(img, keypoints, modeltype):
 def draw_skeleton(img, keypoints, modeltype):
     skeleton, colors = get_vis_info(modeltype)
 
-    scale = 1/250
+    scale = 1/150
     thinkness = min(int(img.shape[0]*scale), int(img.shape[1]*scale))
 
     for i, segment in enumerate(skeleton):
@@ -85,10 +85,10 @@ def draw_skeleton(img, keypoints, modeltype):
 
         if valid_point(point1):
 
-            cv2.circle(img, (int(point1[0]), int(point1[1])), radius=thinkness, color=color, thickness=-1, lineType=cv2.LINE_AA)
+            cv2.circle(img, (int(point1[0]), int(point1[1])), radius=int(thinkness*1.2), color=color, thickness=-1, lineType=cv2.LINE_AA)
 
         if valid_point(point2):
-            cv2.circle(img, (int(point2[0]), int(point2[1])), radius=thinkness, color=color, thickness=-1, lineType=cv2.LINE_AA)
+            cv2.circle(img, (int(point2[0]), int(point2[1])), radius=int(thinkness*1.2), color=color, thickness=-1, lineType=cv2.LINE_AA)
 
         if not valid_point(point1) or not valid_point(point2):
             continue

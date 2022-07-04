@@ -9,7 +9,7 @@ from .yolov6.YOLOv6 import YOLOv6
 
 class HRNET:
 
-    def __init__(self, path, model_type, conf_thres=0.7, search_region_ratio=0.05):
+    def __init__(self, path, model_type, conf_thres=0.7, search_region_ratio=0.1):
         self.conf_threshold = conf_thres
         self.model_type = model_type
         self.search_region_ratio = search_region_ratio
@@ -36,10 +36,11 @@ class HRNET:
 
         full_height, full_width = image.shape[:2]
 
-        boxes, scores, class_ids = get_people_detections(detections)
+        boxes, scores, class_ids = detections
 
         if len(scores) == 0:
-            return self.update(image)
+            self.total_heatmap, self.poses = None, None
+            return self.total_heatmap, self.poses
 
         poses = []
         total_heatmap = np.zeros((full_height, full_width))
@@ -47,12 +48,13 @@ class HRNET:
         for box, score in zip(boxes, scores):
 
             x1, y1, x2, y2 = box
+            box_width, box_height = x2 - x1, y2 - y1
 
             # Enlarge search region
-            x1 = max(int(x1 - full_width * self.search_region_ratio), 0)
-            x2 = min(int(x2 + full_width * self.search_region_ratio), full_width)
-            y1 = max(int(y1 - full_height * self.search_region_ratio), 0)
-            y2 = min(int(y2 + full_height * self.search_region_ratio), full_height)
+            x1 = max(int(x1 - box_width * self.search_region_ratio), 0)
+            x2 = min(int(x2 + box_width * self.search_region_ratio), full_width)
+            y1 = max(int(y1 - box_height * self.search_region_ratio), 0)
+            y2 = min(int(y2 + box_height * self.search_region_ratio), full_height)
 
             crop = image[y1:y2, x1:x2]
             body_heatmap, body_pose = self.update(crop)
@@ -103,7 +105,7 @@ class HRNET:
         start = time.perf_counter()
         outputs = self.session.run(self.output_names, {self.input_names[0]: input_tensor})[0]
 
-        # print(f"Inference time: {(time.perf_counter() - start)*1000:.2f} ms")
+        print(f"Inference time: {(time.perf_counter() - start)*1000:.2f} ms")
         return outputs
 
     def process_output(self, heatmaps):
@@ -123,12 +125,19 @@ class HRNET:
         return total_heatmap, peaks
 
     def draw_pose(self, image):
+
+        if self.poses is None:
+            return image
         return draw_skeletons(image, self.poses, self.model_type)
 
     def draw_heatmap(self, image, mask_alpha=0.4):
+        if self.poses is None:
+            return image
         return draw_heatmap(image, self.total_heatmap, mask_alpha)
 
     def draw_all(self, image, mask_alpha=0.4):
+        if self.poses is None:
+            return image
         return self.draw_pose(self.draw_heatmap(image, mask_alpha))
 
     def get_input_details(self):
